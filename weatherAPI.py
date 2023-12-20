@@ -1,8 +1,7 @@
 from flask import Flask, render_template
 import pandas
 from extract import extractZip
-import shutil, os
-from pathlib import Path
+import os
 from datetime import datetime
 
 
@@ -52,7 +51,8 @@ def home():
 def about(station, date):
     file = getFile(station, 'data_small\\')
     dateCheck = checkDate(date)
-    print(f'FILE: {file}')
+    print(f'FILE: {file}   DATE: {date}')
+
 
     if file is None:
         print(f'Station {station}  -- doesnt exist')
@@ -62,10 +62,7 @@ def about(station, date):
         print(f'Date {date} in invalid')
         return {'station':station, 'date':None, 'temp':None}
     
-    print(f'DATE: {date}')
-
     temp = getTemp(file, date)
-
     return {'station':station, 'date':date, 'temp':temp}
         
 
