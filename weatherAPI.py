@@ -43,9 +43,13 @@ def getTemp(file, date, cel=True):
 
 app = Flask(__name__)
 
+stations = pandas.read_csv('data_small\\stations.txt', skiprows=17)
+stations['STANAME'] = stations['STANAME                                 ']  #create a shorter column
+stations = stations[['STAID', 'STANAME']] #only keep the station id and station name, ignore the rest
+
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('home.html', data=stations.to_html())
 
 @app.route('/api/v1/<station>/<date>')
 def about(station, date):
