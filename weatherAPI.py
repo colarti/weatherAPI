@@ -51,12 +51,41 @@ stations = stations[['STAID', 'STANAME']] #only keep the station id and station 
 def home():
     return render_template('home.html', data=stations.to_html())
 
+
+@app.route('/api/v1/<station>')
+def get_station_data(station):
+    file = getFile(station, 'data_small\\')
+
+    if file is None:
+        print(f'Station {station} -- doesnt exist')
+        return {'station':None, 'date':None, 'temp':None}
+    else:
+        data = pandas.read_csv(f'{file}', skiprows=20, parse_dates=['    DATE'])
+        data = data[['STAID', '    DATE', '   TG']]
+        result = data.to_dict(orient='records')
+        return result
+
+
+@app.route('/api/v1/year/<station>/<year>')
+def get_year_data(station, year):
+    file = getFile(station, 'data_small\\')
+
+    if file is None:
+        print(f'Station {station} -- doesnt exist')
+        return {'station':None, 'date':None, 'temp':None}
+    else:
+        data = pandas.read_csv(f'{file}', skiprows=20)
+        data['    DATE'] = data['    DATE'].astype(str)
+        result = data[data['    DATE'].str.startswith(str(year))].to_dict(orient='records')
+
+        return result
+    
+
 @app.route('/api/v1/<station>/<date>')
 def about(station, date):
     file = getFile(station, 'data_small\\')
     dateCheck = checkDate(date)
     print(f'FILE: {file}   DATE: {date}')
-
 
     if file is None:
         print(f'Station {station}  -- doesnt exist')
